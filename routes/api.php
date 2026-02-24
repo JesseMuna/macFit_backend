@@ -6,19 +6,31 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\EquipmentController;
 use App\Http\Controllers\GymController;
+use App\Http\Controllers\ResendVerificationController;
 use App\Http\Controllers\SubscriptionController;
+use App\Http\Controllers\Verify;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-
+            //public routes
 Route::post('/register', [AuthController::class,'register']);
 Route::post('/login', [AuthController::class,'login']);
+
+//email verification
+
+Route::get('/email/verify/{id}/{hash}', [Verify::class,'verify'])
+    ->name('verification.verify')->middleware('signed','throttle:6,1');
+
+Route::post('/email/resend',[ResendVerificationController::class, 'resend'])
+->middleware('throttle:6,1');
+
 
 Route::middleware('auth:sanctum')->group(function(){
 // use App\Http\Controllers\RoleController;
 // Route::get('/user', function (Request $request) {
     // return $request->user(); 
 // })->middleware('auth:sanctum');
+Route::post('/logout', [AuthController::class,'logout']);
 
 Route::post('/saveRole',[RoleController::class, 'createRole']);
 Route::get('/getRoles',[RoleController::class, 'readAllRoles']);
